@@ -1,0 +1,5 @@
+h1. Sentinel
+
+Stupid-simple authorization for Rails
+
+Copyright (c) 2009 Joshua Clayton, released under the MIT license
