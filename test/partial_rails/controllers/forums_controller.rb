@@ -4,21 +4,20 @@ class ForumsController < ApplicationController
   end
   
   grants_access_to :reorderable?, :only => [:reorder]
-  grants_access_to :creatable?, :only => [:new, :create]
-  grants_access_to :viewable?, :only => [:show]
+  grants_access_to :creatable?, :only => [:new, :create], :denies_with => :redirect_to_index
+  grants_access_to :viewable?, :only => [:show], :denies_with => :sentinel_unauthorized
   grants_access_to :destroyable?, :only => [:destroy]
   
-  with_access do
-    true
+  on_denied_with :redirect_to_index do
+    redirect_to url_for(:controller => "forums")
   end
   
-  on_denied_with :unauthorized do
+  on_denied_with :sentinel_unauthorized do
     respond_to do |wants|
-      wants.html { render :text => "This is an even more unique default restricted warning", :status => :unauthorized }
-      wants.any { head :unauthorized }
+      wants.html { render :text => "This is an even more unique default restricted warning", :status => :forbidden }
+      wants.any { head :forbidden }
     end
   end
-  
   
   def index
     handle_successfully

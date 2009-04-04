@@ -1,4 +1,8 @@
 class ForumSentinel < Sentinel::Sentinel
+  def indexable?
+    current_user?
+  end
+  
   def creatable?
     current_user_admin?
   end
