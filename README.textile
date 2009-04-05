@@ -8,7 +8,7 @@ Sentinels are objects that track permissions.  They're flexible, handy, and very
 
 For example, here's a ForumSentinel:
 
-<pre><code>
+<code><pre>
 class ForumSentinel < Sentinel::Sentinel
   def creatable?
     current_user_admin?
@@ -40,7 +40,7 @@ class ForumSentinel < Sentinel::Sentinel
     current_user? && self.current_user.admin?
   end
 end
-</code></pre>
+</pre></code>
 
 So, what's this guy do?  He personally tracks ability to essentially CRUD a forum, based on the current user.
 
@@ -54,7 +54,7 @@ But, there's more.
 
 You may be asking, "What about when I'm looping through a recordset and want to determine permissions on the fly?"  That's a legitimate question, really.  I've got an easy answer for you.  Imagine your view looks something like this:
 
-<pre><code>
+<code><pre>
 <% @forums.each do |forum| %>
   <% sentinel = ForumSentinel.new(:current_user => current_user, :forum => forum) %>
   <% if sentinel.viewable? %>
@@ -64,11 +64,11 @@ You may be asking, "What about when I'm looping through a recordset and want to 
     </div>
   <% end %>
 <% end %>
-</code></pre>
+</pre></code>
 
 You get the idea.  This is still pretty nasty though, since we're instantiating a new sentinel for each item in the recordset.  Let's handle this in the controller.
 
-<pre><code>
+<code><pre>
 class ForumsController < ApplicationController
   controls_access_with do
     ForumSentinel.new :current_user => current_user, :forum => @forum
@@ -76,11 +76,11 @@ class ForumsController < ApplicationController
   
   # ...etc
 end
-</code></pre>
+</pre></code>
 
 Here, we setup the sentinel in the controller and make a @sentinel@ view helper to access the instantiated object.  So, if `@forum` is set up in the show action, we'll have access to it.  The index action, not so much.  Not to fear.
 
-<pre><code>
+<code><pre>
 <% @forums.each do |forum| %>
   <% if sentinel[:forum => forum].viewable? %>
     <div id="<%= dom_id(forum) %>">
@@ -89,7 +89,7 @@ Here, we setup the sentinel in the controller and make a @sentinel@ view helper 
     </div>
   <% end %>
 <% end %>
-</code></pre>
+</pre></code>
 
 Essentially the same view as before, except we're not instantiating on every line and it keeps the view nice and clean.  Notice we call `[]`, passing in a hash?  Those are _temporary_ (as in, that call only) overrides.  We assign forum to the current forum we're looping through and have the sentinel return permissions scoped to itself with whatever overrides.
 
@@ -99,7 +99,7 @@ So, handling permissions in the views are pretty easy now; hell, testing should 
 
 I introduce to you... @grants_access_to@.
 
-<pre><code>
+<code><pre>
 class ForumsController < ApplicationController
   controls_access_with do
     ForumSentinel.new :current_user => current_user, :forum => @forum
@@ -110,13 +110,13 @@ class ForumsController < ApplicationController
   grants_access_to :viewable?, :only => [:show]
   grants_access_to :destroyable?, :only => [:destroy]
 end
-</code></pre>
+</pre></code>
 
 @grants_access_to@ is essentially a @before_filter@ on crack.  It uses the sentinel we've set up and calls methods on it.  So, if the sentinel returns true when :reorderable? is called, it won't deny the request.  Other filters, however, may.
 
 You need not call methods on the sentinel if you don't want to.  Let's say you want to check if a user is logged in and an admin (contrived example, I know).
 
-<pre><code>
+<code><pre>
 class ForumsController < ApplicationController
   controls_access_with do
     ForumSentinel.new :current_user => current_user, :forum => @forum
@@ -130,13 +130,13 @@ class ForumsController < ApplicationController
     s.creatable? && s.forum.private?
   end
 end
-</code></pre>
+</pre></code>
 
 The first @grants_access_to@ evaluates in the scope of the controller.  If the block passed has an arity of 1 (one required block-level variable), it evaluates in the context of the sentinel.
 
 When granting access, you may want to handle different checks differently.  You can essentially how the controller handles how things are denied.  For example, you may want to include a couple basics within @ApplicationController@.
 
-<pre><code>
+<code><pre>
 class ApplicationController < ActionController::Base
   on_denied_with :forbid_access do
     respond_to do |wants|
@@ -157,11 +157,11 @@ class ApplicationController < ActionController::Base
     end
   end
 end
-</code></pre>
+</pre></code>
   
 If these are set up, you can then have your actions deny with whatever you want, like so: 
 
-<pre><code>
+<code><pre>
 class ForumsController < ApplicationController
   controls_access_with do
     ForumSentinel.new :current_user => current_user, :forum => @forum
@@ -172,7 +172,7 @@ class ForumsController < ApplicationController
   grants_access_to :viewable?, :only => [:show], :denies_with => :unauthorized
   grants_access_to :destroyable?, :only => [:destroy], :denies_with => :forbidden
 end
-</code></pre>
+</pre></code>
 
 Testing the sentinels themselves are fairly easy to do; I won't go into detail with that.
 
@@ -180,7 +180,7 @@ Testing the controllers, however, can be a bit tricky.  Luckily, there are a han
 
 Here's a short example of what you may want to test:
 
-<pre><code>
+<code><pre>
 class SentinelControllerTest < ActionController::TestCase
   include ActionView::Helpers::UrlHelper
   include ActionView::Helpers::TagHelper
@@ -207,7 +207,7 @@ class SentinelControllerTest < ActionController::TestCase
     should_grant_access_to "post :create, :forum => {:name => 'My New Forum'}"
   end
 end
-</code></pre>
+</pre></code>
 
 @sentinel_context@ allows you to stub out responses for whatever methods you want on the sentinel.  Assign attributes (`:current_user`, `:forum`, etc) or stub the permission methods themselves (that's what I would recommend, since your sentinel unit tests should check what the permissions return).
 
