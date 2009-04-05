@@ -8,6 +8,7 @@ Sentinels are objects that track permissions.  They're flexible, handy, and very
 
 For example, here's a ForumSentinel:
 
+<pre>
 <code>
 class ForumSentinel < Sentinel::Sentinel
   def creatable?
@@ -41,7 +42,7 @@ class ForumSentinel < Sentinel::Sentinel
   end
 end
 </code>
-  
+</pre>
 So, what's this guy do?  He personally tracks ability to essentially CRUD a forum, based on the current user.
 
 How do we instantiate something like this?
