@@ -1,16 +1,15 @@
+require 'rubygems'
 require 'rake'
-require 'rake/testtask'
+require 'echoe'
 require 'rake/rdoctask'
 
-desc 'Default: run unit tests.'
-task :default => :test
-
-desc 'Test the sentinel plugin.'
-Rake::TestTask.new(:test) do |t|
-  t.libs << 'lib'
-  t.libs << 'test'
-  t.pattern = 'test/**/*_test.rb'
-  t.verbose = true
+Echoe.new("sentinel", "0.1.0") do |p|
+  p.description = "Simple authorization for Rails"
+  p.url = "http://github.com/joshuaclayton/sentinel"
+  p.author = "Joshua Clayton"
+  p.email = "joshua.clayton@gmail.com"
+  p.ignore_pattern = ["tmp/*"]
+  p.development_dependencies = ["actionpack >= 2.1.0"]
 end
 
 desc 'Generate documentation for the sentinel plugin.'
