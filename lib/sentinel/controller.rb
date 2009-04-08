@@ -45,6 +45,7 @@ module Sentinel
       
       def grants_access_to(*args, &block)
         options = args.extract_options!
+        
         block = args.shift if args.first.respond_to?(:call)
         sentinel_method = args.first
         denied_handler = options.delete(:denies_with) || :default

@@ -9,7 +9,9 @@ class SentinelControllerTest < ActionController::TestCase
   end
   
   sentinel_context do
-    should_not_guard "get :index"
+    without_before_filters do
+      should_not_guard "get :index"
+    end
   end
   
   sentinel_context({:viewable? => true}) do
@@ -30,15 +32,22 @@ class SentinelControllerTest < ActionController::TestCase
     should_deny_access_to "get :show", :with => :sentinel_unauthorized
   end
   
-  denied_with :redirect_to_index do
-    should_redirect_to("forums root") { url_for(:controller => "forums")}
-  end
-  
-  denied_with :sentinel_unauthorized do
-    should_respond_with :forbidden
+  context "A controller-global grants_access_to that denies access" do
+    # this ensures that, even with a failing grants_access_to, we can properly test all denied_with handlers
+    setup do
+      @controller.stubs(:stubbed_method).returns(false)
+    end
     
-    should "render text as response" do
-      assert_equal "This is an even more unique default restricted warning", @response.body
+    denied_with :redirect_to_index do
+      should_redirect_to("forums root") { url_for(:controller => "forums", :action => "secondary_index")}
+    end
+
+    denied_with :sentinel_unauthorized do
+      should_respond_with :forbidden
+
+      should "render text as response" do
+        assert_equal "This is an even more unique default restricted warning", @response.body
+      end
     end
   end
 end

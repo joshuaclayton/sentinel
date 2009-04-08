@@ -3,7 +3,7 @@ require 'rake'
 require 'echoe'
 require 'rake/rdoctask'
 
-Echoe.new("sentinel", "0.1.0") do |p|
+Echoe.new("sentinel", "0.1.1") do |p|
   p.description = "Simple authorization for Rails"
   p.url = "http://github.com/joshuaclayton/sentinel"
   p.author = "Joshua Clayton"

@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{sentinel}
-  s.version = "0.1.0"
+  s.version = "0.1.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 1.2") if s.respond_to? :required_rubygems_version=
   s.authors = ["Joshua Clayton"]
-  s.date = %q{2009-04-06}
+  s.date = %q{2009-04-08}
   s.description = %q{Simple authorization for Rails}
   s.email = %q{joshua.clayton@gmail.com}
   s.extra_rdoc_files = ["lib/sentinel/controller.rb", "lib/sentinel/sentinel.rb", "lib/sentinel.rb", "README.textile"]
