@@ -1,0 +1,16 @@
+lib/sentinel/controller.rb
+lib/sentinel/sentinel.rb
+lib/sentinel.rb
+Manifest
+MIT-LICENSE
+rails/init.rb
+Rakefile
+README.textile
+sentinel.gemspec
+shoulda_macros/sentinel.rb
+test/functional/sentinel_controller_test.rb
+test/partial_rails/controllers/application_controller.rb
+test/partial_rails/controllers/forums_controller.rb
+test/partial_rails/forum_sentinel.rb
+test/test_helper.rb
+test/unit/sentinel_test.rb
