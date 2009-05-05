@@ -2,14 +2,15 @@ module Sentinel
   module Controller
     
     def self.included(base)
+      base.class_inheritable_writer :sentinel, :instance_writer => false
+      base.class_inheritable_accessor :access_denied, :access_granted
+      
       base.send :include, InstanceMethods
       base.extend ClassMethods
       
       base.class_eval do
         helper_method :sentinel
       end
-      
-      base.class_inheritable_accessor :sentinel, :access_denied, :access_granted
       
       base.on_denied_with do
         respond_to do |format|
@@ -32,6 +33,10 @@ module Sentinel
     module ClassMethods
       def controls_access_with(&block)
         self.sentinel = block
+      end
+      
+      def sentinel
+        read_inheritable_attribute(:sentinel)
       end
       
       def on_denied_with(name = :default, &block)

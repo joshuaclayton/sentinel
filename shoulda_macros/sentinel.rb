@@ -5,7 +5,7 @@ module Sentinel
       context "When sentinel is set up to #{options.inspect}" do
         setup do
           options.keys.each do |key|
-            @controller.sentinel.stubs(key).returns(options[key])
+            @controller.sentinel.class.any_instance.stubs(key).returns(options[key])
           end
           options.keys.each do |key|
             assert_equal options[key], @controller.sentinel.send(key)
