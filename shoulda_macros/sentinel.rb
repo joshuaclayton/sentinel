@@ -45,26 +45,28 @@ module Sentinel
       end
     end
 
-    def should_grant_access_to(command)
-      context "performing `#{command}`" do
-        should "allow access" do
-          granted = @controller.class.read_inheritable_attribute(:access_granted)
-          @controller.class.expects(:access_granted).at_least(1).returns(granted)
-          eval command
+    def should_grant_access_to(*args)
+      args.each do |command|
+        context "performing `#{command}`" do
+          should "allow access" do
+            granted = @controller.class.read_inheritable_attribute(:access_granted)
+            @controller.class.expects(:access_granted).at_least(1).returns(granted)
+            eval command
+          end
         end
       end
     end
 
     def should_deny_access_to(*args)
       options = args.extract_options!
-      command = args.shift
-
-      context "performing `#{command}`" do
-        should "call the proper denied handler" do
-          denied_with = options[:with] || :default
-          handler = @controller.class.read_inheritable_attribute(:access_denied)[denied_with]
-          @controller.class.access_denied.expects(:[]).with(denied_with).returns(handler)
-          eval command
+      args.each do |command|
+        context "performing `#{command}`" do
+          should "call the proper denied handler" do
+            denied_with = options[:with] || :default
+            handler = @controller.class.read_inheritable_attribute(:access_denied)[denied_with]
+            @controller.class.access_denied.expects(:[]).with(denied_with).returns(handler)
+            eval command
+          end
         end
       end
     end

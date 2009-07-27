@@ -19,11 +19,13 @@ class ForumSentinel < Sentinel::Sentinel
   end
 
   def viewable?
-    self.forum.public? || (current_user? && self.forum.members.include?(self.current_user)) || current_user_admin?
+    return true if self.forum.public? || current_user_admin?
+    (current_user? && self.forum.members.include?(self.current_user))
   end
 
   def editable?
-    (current_user? && self.forum.owner == self.current_user) || current_user_admin?
+    return true if current_user_admin?
+    (current_user? && self.forum.owner == self.current_user)
   end
 
   def destroyable?
@@ -198,13 +200,14 @@ class SentinelControllerTest < ActionController::TestCase
   end
   
   sentinel_context({:creatable? => false}) do
-    should_deny_access_to "get :new", :with => :redirect_to_index
-    should_deny_access_to "post :create, :forum => {:name => 'My New Forum'}", :with => :redirect_to_index
+    should_deny_access_to "get :new",
+                          "post :create, :forum => {:name => 'My New Forum'}",
+                          :with => :redirect_to_index
   end
   
   sentinel_context({:creatable? => true}) do
-    should_grant_access_to "get :new"
-    should_grant_access_to "post :create, :forum => {:name => 'My New Forum'}"
+    should_grant_access_to "get :new",
+                           "post :create, :forum => {:name => 'My New Forum'}"
   end
 end
 </code></pre>
